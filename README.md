@@ -108,7 +108,7 @@ pip install -r requirements.txt
 2. Rode `notebooks/exploracao.ipynb` do início ao fim
 
 
-relacional da Olist, aplicando modelagem dimensional (Star Schema) e SQL
+
 avançado (JOINs, window functions).
 
 ---
