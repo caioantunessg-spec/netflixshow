@@ -107,11 +107,7 @@ pip install -r requirements.txt
 1. Baixe o dataset em `data/raw/netflix_titles.csv`
 2. Rode `notebooks/exploracao.ipynb` do início ao fim
 
-## 🚀 Próximo passo
 
-Este é meu primeiro projeto de portfólio em Dados — um dataset simples,
-de uma tabela só, para treinar Python, SQL e Power BI antes de avançar
-para um projeto mais complexo: análise de e-commerce com o dataset
 relacional da Olist, aplicando modelagem dimensional (Star Schema) e SQL
 avançado (JOINs, window functions).
 
