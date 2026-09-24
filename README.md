@@ -44,6 +44,18 @@ Todas as 9 perguntas do escopo original já estão respondidas no dashboard.
 - **Power BI + Power Query + DAX** — modelagem, medidas calculadas e dashboard interativo (`NETFLIX.pbix`)
 
 ---
+## 🧹 Tratamento de dados (Python)
+
+[#-tratamento-de-dados-python](#-tratamento-de-dados-python)
+
+O notebook `notebooks/exploracao.ipynb` cobre a etapa de exploração e limpeza antes de os dados irem para o SQLite/Power BI:
+
+- [Tratamento de valores nulos em colunas como `director`, `cast`, `country`]
+- [Conversão de `duration` em `duracao_minutos` (filmes) e `temporadas` (séries), separando os dois tipos]
+- [Criação da coluna `ano_adicionado` a partir de `date_added`]
+- [Padronização de tipos antes da exportação para `.csv`/SQLite]
+
+> Ajuste os pontos acima para refletir exatamente as etapas feitas no notebook — não tive acesso ao conteúdo do arquivo, só à listagem do repositório.
 
 ## 📊 Sobre o dashboard
 
