@@ -1,114 +1,79 @@
-# 🎬 Análise do Catálogo Netflix
+Netflix Content Analytics 🎬
 
-Projeto de portfólio em Dados — análise exploratória do catálogo de filmes
-e séries da Netflix, usando dados reais públicos.
+Projeto de portfólio de análise de dados usando o dataset público Netflix Movies and TV Shows (Kaggle), com tratamento em Python, armazenamento em SQLite e visualização em um dashboard interativo no Power BI.
 
-## 🎯 Objetivo
+Este projeto foi pensado como uma introdução prática ao fluxo completo de um projeto de dados: da exploração e limpeza até a entrega de um dashboard com storytelling visual.
 
-Simular a demanda de um time de conteúdo de streaming que precisa entender
-o catálogo atual: composição (filme x série), crescimento ao longo do
-tempo, países e gêneros predominantes, classificação etária e padrões de
-duração.
-
-## ❓ Perguntas de negócio respondidas
-
-- Quantos títulos existem no catálogo? Quantos são filmes e quantos são séries?
-- Como o catálogo cresceu ano a ano?
-- Quais países produzem mais conteúdo?
-- Quais gêneros são mais comuns?
-- Qual é a classificação etária mais frequente?
-- Qual a duração média dos filmes e o número médio de temporadas das séries?
-- A Netflix adiciona majoritariamente conteúdo recém-lançado ou catálogo antigo?
-
-## 📊 Dataset
-
-**Netflix Movies and TV Shows** (Kaggle) — [link do dataset]
-- 8.807 títulos
-- Colunas: `type`, `title`, `director`, `cast`, `country`, `date_added`,
-  `release_year`, `rating`, `duration`, `listed_in`, `description`
-
-## 🛠️ Tecnologias
-
-- **Python** (Pandas) — exploração e limpeza dos dados
-- **Matplotlib/Seaborn** — visualizações exploratórias
-- **SQLite** — banco de dados para prática de SQL
-- **SQL** — consultas de negócio
-- **Power BI** — dashboard (em andamento)
-- **Git/GitHub** — versionamento
-
-## 📁 Estrutura do projeto
-
-```text
-netflixshow/
-├── data/
-│   ├── raw/                  # CSV original (não versionado)
-│   └── netflix.db            # banco SQLite gerado (não versionado)
-├── notebooks/
-│   └── exploracao.ipynb      # pipeline completo: carga → limpeza → análise → SQL
-├── powerbi/                  # dashboard (em andamento)
-├── .gitignore
+🎯 Perguntas de negócio respondidas
+Quantos títulos existem no catálogo?
+Quantos são filmes e quantos são séries?
+Como o catálogo cresceu ano a ano?
+Quais países produzem mais conteúdo no catálogo?
+Quais gêneros são mais comuns?
+Qual é a classificação etária (rating) mais frequente?
+Qual é a duração média dos filmes?
+Qual é o número médio de temporadas das séries?
+Existe relação entre o ano de lançamento e o gênero mais comum?
+🗂️ Estrutura do projeto
+├── dados/
+│   ├── netflix.db                  # Banco SQLite com os dados tratados
+│   └── netflix_titles_tratado.csv  # Dataset limpo, pronto para consumo no Power BI
+├── cadernos/
+│   └── exploracao.ipynb            # Exploração, limpeza e tratamento dos dados em Python
+├── NETFLIX.pbix                    # Dashboard interativo no Power BI
+├── .gitattributes
 └── README.md
-```
+🛠️ Tecnologias utilizadas
+Python (Pandas) — exploração, limpeza e tratamento dos dados (cadernos/exploracao.ipynb)
+SQLite — armazenamento estruturado dos dados tratados (dados/netflix.db)
+Power BI + DAX — modelagem, medidas calculadas e dashboard interativo (NETFLIX.pbix)
+📊 Sobre o dashboard
 
-## 🧹 Limpeza de dados — decisões tomadas
+O dashboard (NETFLIX.pbix) foi construído com identidade visual inspirada na marca Netflix (preto, cinza e vermelho 
+#E50914), e inclui:
 
-| Coluna | Problema encontrado | Decisão |
-|---|---|---|
-| `director`, `cast`, `country` | Muitos valores nulos (dado ausente, não erro) | Preenchidos com `"Não informado"` em vez de remover a linha |
-| `date_added` | Vinha como texto | Convertida para data com `pd.to_datetime` |
-| `duration` | Misturava minutos (filme) e temporadas (série) na mesma coluna | Separada em duas colunas numéricas: `duracao_minutos` e `temporadas` |
-| `country`, `listed_in` | Múltiplos valores na mesma célula (ex.: "US, India, France") | Colunas "explodidas" para contar cada país/gênero individualmente |
-| `defasagem_anos` (calculada) | Alguns títulos com defasagem negativa entre lançamento e adição ao catálogo | Investigado: causado por `release_year` refletir o ano oficial de lançamento (não a data real de estreia — comum em títulos de dezembro). Mantidas as linhas; usada **mediana** em vez de média para evitar distorção |
+Cartões de KPI: Total de Títulos, Total de Filmes, Total de Séries, Total de Países, Duração Média (Filmes), Média de Temporadas (Séries)
+Evolução do catálogo por ano: gráfico de colunas com gradiente de cor destacando os anos mais recentes, tooltip customizado (ano, quantidade de títulos e variação % em relação ao ano anterior) e gridlines limpas
+Distribuição Filmes x Séries: gráfico de rosca (donut)
+Total de Títulos por país: gráfico de barras com o país líder destacado em vermelho
+Principais gêneros: gráfico de barras com o gênero líder destacado em vermelho
+Classificação etária (rating) mais frequente: gráfico de barras ordenado, com o rating líder destacado
+Formatação visual consistente: fundo claro, cartões com sombra sutil e cantos arredondados
+Medidas DAX principais
+dax
+Total de Títulos = COUNTROWS(netflix_titles_tratado)
 
-## 🔎 Principais descobertas
+Total de Filmes = CALCULATE([Total de Títulos], netflix_titles_tratado[type] = "Movie")
 
-## 🔎 Principais descobertas
+Total de Séries = CALCULATE([Total de Títulos], netflix_titles_tratado[type] = "TV Show")
 
-- [ ] % de filmes x séries no catálogo
-- [ ] Ano com mais títulos adicionados
-- [ ] Top 3 países com mais produções
-- [ ] Top 3 gêneros mais comuns
-- [ ] Classificação etária mais frequente
-- [x] A Netflix adiciona majoritariamente conteúdo recém-lançado: metade do
-      catálogo entra até 1 ano após o lançamento original (mediana = 1 ano)
-- [x] Identificada uma particularidade nos dados: alguns títulos têm
-      `release_year` posterior à data real de adição, por conta de
-      lançamentos em dezembro rotulados com o ano seguinte — tratado
-      usando mediana em vez de média para evitar distorção
+Duração Média (Filmes) = 
+CALCULATE(AVERAGE(netflix_titles_tratado[duracao_minutos]), netflix_titles_tratado[type] = "Movie")
 
-*(itens ainda com [ ] serão preenchidos conforme forem confirmados no notebook)*
+Média de Temporadas (Séries) = 
+CALCULATE(AVERAGE(netflix_titles_tratado[temporadas]), netflix_titles_tratado[type] = "TV Show")
 
+Var % Ano Anterior = 
+VAR AnoAtual = SELECTEDVALUE(netflix_titles_tratado[release_year])
+VAR TitulosAnoAnterior = 
+    CALCULATE([Total de Títulos], FILTER(ALL(netflix_titles_tratado), netflix_titles_tratado[release_year] = AnoAtual - 1))
+RETURN
+DIVIDE([Total de Títulos] - TitulosAnoAnterior, TitulosAnoAnterior)
 
-## 🗃️ SQL
+Também foram criadas medidas de formatação condicional (Cor Coluna, Cor País, Cor Gênero, Cor Rating) para destacar dinamicamente o item de maior valor em cada gráfico.
 
-Consultas praticadas no SQLite (`data/netflix.db`, tabela `titulos`):
+🚀 Como reproduzir
+Clone este repositório
+Explore o tratamento dos dados em cadernos/exploracao.ipynb
+Os dados tratados já estão disponíveis em dados/netflix_titles_tratado.csv e dados/netflix.db
+Abra NETFLIX.pbix no Power BI Desktop para visualizar e interagir com o dashboard
+📌 Status
 
-- [x] Total de títulos
-- [ ] Filmes x séries
-- [ ] Top 10 anos com mais lançamentos
-- [ ] Distribuição por classificação etária
-- [ ] Duração média de filmes
-- [ ] Filmes recentes (pós-2015)
-- [ ] Séries com mais de 5 temporadas
-- [ ] Títulos sem diretor informado
+Projeto em desenvolvimento — próximos passos incluem uma análise cruzada entre ano de lançamento e gênero (pergunta 9) e uma tabela de atores com mais participações no catálogo.
 
-## 📈 Dashboard (Power BI)
+👤 Autor
 
-*Em andamento — 1 página com cards (total de títulos, filmes, séries,
-duração média), gráfico de títulos por ano, top gêneros e top países.*
-
-## ▶️ Como rodar
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-1. Baixe o dataset em `data/raw/netflix_titles.csv`
-2. Rode `notebooks/exploracao.ipynb` do início ao fim
-
-
-
+Caio Antunes Em transição de carreira para Análise de Dados / BI / Engenharia de Dados.
 avançado (JOINs, window functions).
 
 ---
