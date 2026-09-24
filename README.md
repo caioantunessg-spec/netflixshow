@@ -46,18 +46,20 @@ Todas as 9 perguntas do escopo original já estão respondidas no dashboard.
 ---
 ## 🧹 Tratamento de dados (Python)
 
-[#-tratamento-de-dados-python](#-tratamento-de-dados-python)
+O notebook `cadernos/exploracao.ipynb` cobre a exploração e limpeza antes dos dados irem para o SQLite/Power BI:
 
-O notebook `notebooks/exploracao.ipynb` cobre a etapa de exploração e limpeza antes de os dados irem para o SQLite/Power BI:
+- **Nulos**: `director`, `cast` e `country` (até ~30% de valores ausentes) foram preenchidos com `"Não informado"` em vez de removidos, para não perder linhas.
+- **Datas**: `date_added` convertida para tipo data com `errors="coerce"`, transformando datas mal formatadas em nulo em vez de quebrar o script.
+- **Duração dividida em duas colunas**: `duration` misturava minutos (filme) e temporadas (série) na mesma coluna como texto. Foi separada em `duracao_minutos` (só filmes) e `temporadas` (só séries), permitindo calcular médias sem misturar as duas unidades.
+- **Colunas auxiliares para colunas multivaloradas**: `country` e `listed_in` têm vários valores por célula — foram "explodidas" em tabelas auxiliares (`paises`, `generos`) para contar cada país/gênero individualmente, sem duplicar linhas na tabela principal.
+- **Coluna derivada `ano_adicionado`**: extraída de `date_added`, usada para analisar a evolução do catálogo por ano.
+- **Coluna derivada `defasagem_anos`**: diferença entre `ano_adicionado` e `release_year`. Foram encontrados casos de defasagem negativa (título "adicionado" antes do "ano de lançamento") — investigado e mantido, pois não é erro: `release_year` é o ano oficial dado pela produtora, que pode ser posterior à estreia real (ex: título estreado em dezembro já rotulado com o ano seguinte). Por isso a mediana (1 ano) foi usada em vez da média para descrever a defasagem típica, já que esses casos distorcem a média.
+- Dados tratados exportados para `dados/netflix.db` (SQLite) e `dados/netflix_titles_tratado.csv`.
 
-- [Tratamento de valores nulos em colunas como `director`, `cast`, `country`]
-- [Conversão de `duration` em `duracao_minutos` (filmes) e `temporadas` (séries), separando os dois tipos]
-- [Criação da coluna `ano_adicionado` a partir de `date_added`]
-- [Padronização de tipos antes da exportação para `.csv`/SQLite]
-
-> Ajuste os pontos acima para refletir exatamente as etapas feitas no notebook — não tive acesso ao conteúdo do arquivo, só à listagem do repositório.
+O notebook também inclui uma seção de **SQL básico com SQLite** (contagens, agrupamentos, filtros e ordenações) validando as mesmas perguntas de negócio antes delas irem para o Power BI.
 
 ## 📊 Sobre o dashboard
+![Dashboard Netflix](Painel%20de%20controle.png)
 
 O dashboard (`NETFLIX.pbix`) foi construído com identidade visual inspirada na marca Netflix (preto, cinza e vermelho `#E50914`), e inclui:
 
@@ -126,8 +128,6 @@ Durante o desenvolvimento, foi identificado um problema de conversão de tipos n
 2. Explore o tratamento dos dados em `cadernos/exploracao.ipynb`
 3. Os dados tratados já estão disponíveis em `dados/netflix_titles_tratado.csv` e `dados/netflix.db`
 4. Abra `NETFLIX.pbix` no Power BI Desktop para visualizar e interagir com o dashboard
-
----
 
 ## 📌 Status
 
