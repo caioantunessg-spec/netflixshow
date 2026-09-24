@@ -59,7 +59,7 @@ O notebook `cadernos/exploracao.ipynb` cobre a exploração e limpeza antes dos 
 O notebook também inclui uma seção de **SQL básico com SQLite** (contagens, agrupamentos, filtros e ordenações) validando as mesmas perguntas de negócio antes delas irem para o Power BI.
 
 ## 📊 Sobre o dashboard
-![Dashboard Netflix](Painel%20de%20controle.png)
+![Dashboard Netflix](Dashboard.png)
 
 O dashboard (`NETFLIX.pbix`) foi construído com identidade visual inspirada na marca Netflix (preto, cinza e vermelho `#E50914`), e inclui:
 
