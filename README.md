@@ -8,15 +8,17 @@ Este projeto foi pensado como uma introdução prática ao fluxo completo de um 
 
 ## 🎯 Perguntas de negócio respondidas
 
-1. Quantos títulos existem no catálogo?
-2. Quantos são filmes e quantos são séries?
-3. Como o catálogo cresceu ano a ano?
-4. Quais países produzem mais conteúdo no catálogo?
-5. Quais gêneros são mais comuns?
-6. Qual é a classificação etária (rating) mais frequente?
-7. Qual é a duração média dos filmes?
-8. Qual é o número médio de temporadas das séries?
-9. Existe relação entre o ano de lançamento e o gênero mais comum?
+1. ✅ Quantos títulos existem no catálogo?
+2. ✅ Quantos são filmes e quantos são séries?
+3. ✅ Como o catálogo cresceu ano a ano?
+4. ✅ Quais países produzem mais conteúdo no catálogo?
+5. ✅ Quais gêneros são mais comuns?
+6. ✅ Qual é a classificação etária (rating) mais frequente?
+7. ✅ Qual é a duração média dos filmes?
+8. ✅ Qual é o número médio de temporadas das séries?
+9. ✅ Existe relação entre o ano de lançamento e o gênero mais comum?
+
+Todas as 9 perguntas do escopo original já estão respondidas no dashboard.
 
 ---
 
@@ -39,7 +41,7 @@ Este projeto foi pensado como uma introdução prática ao fluxo completo de um 
 
 - **Python (Pandas)** — exploração, limpeza e tratamento dos dados (`cadernos/exploracao.ipynb`)
 - **SQLite** — armazenamento estruturado dos dados tratados (`dados/netflix.db`)
-- **Power BI + DAX** — modelagem, medidas calculadas e dashboard interativo (`NETFLIX.pbix`)
+- **Power BI + Power Query + DAX** — modelagem, medidas calculadas e dashboard interativo (`NETFLIX.pbix`)
 
 ---
 
@@ -53,7 +55,18 @@ O dashboard (`NETFLIX.pbix`) foi construído com identidade visual inspirada na 
 - **Total de Títulos por país**: gráfico de barras com o país líder destacado em vermelho
 - **Principais gêneros**: gráfico de barras com o gênero líder destacado em vermelho
 - **Classificação etária (rating) mais frequente**: gráfico de barras ordenado, com o rating líder destacado
+- **Títulos por Ano e Gênero**: matriz em formato de mapa de calor (heatmap), cruzando `release_year` com os principais gêneros
+- **Tabela de atores com mais participações**: top atores por número de aparições no catálogo, calculada a partir de uma tabela dedicada (`Atores`)
 - Formatação visual consistente: fundo claro, cartões com sombra sutil e cantos arredondados
+
+### Modelo de dados
+
+Além da tabela principal `netflix_titles_tratado`, o modelo inclui duas tabelas de apoio, criadas por referência (sem alterar a tabela original) para permitir análises que dependem de colunas multivaloradas:
+
+- **`Generos`** — `listed_in` dividido em uma linha por gênero (usada na matriz ano × gênero)
+- **`Atores`** — `cast` dividido em uma linha por ator (usada na tabela de atores com mais participações)
+
+> ⚠️ Colunas com múltiplos valores por célula (`listed_in`, `cast`) nunca devem ser divididas diretamente na tabela principal — isso duplica linhas e distorce todas as medidas de contagem/média. Sempre criar uma tabela de referência separada para esse tipo de tratamento.
 
 ### Medidas DAX principais
 
@@ -76,9 +89,22 @@ VAR TitulosAnoAnterior =
     CALCULATE([Total de Títulos], FILTER(ALL(netflix_titles_tratado), netflix_titles_tratado[release_year] = AnoAtual - 1))
 RETURN
 DIVIDE([Total de Títulos] - TitulosAnoAnterior, TitulosAnoAnterior)
+
+Total de Participações = COUNTROWS(Atores)
 ```
 
-Também foram criadas medidas de formatação condicional (`Cor Coluna`, `Cor País`, `Cor Gênero`, `Cor Rating`) para destacar dinamicamente o item de maior valor em cada gráfico.
+Também foram criadas medidas de formatação condicional (`Cor Coluna`, `Cor País`, `Cor Gênero`, `Cor Rating`) para destacar dinamicamente o item de maior valor em cada gráfico, com o mesmo padrão:
+
+```dax
+Cor Rating = 
+VAR MaxTitulos = MAXX(ALLSELECTED(netflix_titles_tratado[rating]), CALCULATE([Total de Títulos]))
+RETURN
+IF([Total de Títulos] = MaxTitulos, "#E50914", "#D3D3D3")
+```
+
+### Nota sobre tratamento de dados (localidade)
+
+Durante o desenvolvimento, foi identificado um problema de conversão de tipos no Power Query: colunas numéricas geradas em Python com casa decimal (ex: `90.0`, `1.0`) estavam sendo interpretadas com a localidade regional errada (Português-Brasil, que usa `.` como separador de milhar), corrompendo os valores (ex: `90.0` → `900`). A correção foi aplicar **Alterar Tipo → Usando a Localidade → Inglês (Estados Unidos)** logo na primeira conversão de tipo de cada coluna numérica derivada (`duracao_minutos`, `temporadas`, `ano_adicionado`, `defasagem_anos`, `release_year`), evitando reconversões duplicadas mais adiante na cadeia de etapas do Power Query.
 
 ---
 
@@ -93,7 +119,7 @@ Também foram criadas medidas de formatação condicional (`Cor Coluna`, `Cor Pa
 
 ## 📌 Status
 
-Projeto em desenvolvimento — próximos passos incluem uma análise cruzada entre ano de lançamento e gênero (pergunta 9) e uma tabela de atores com mais participações no catálogo.
+Projeto funcionalmente completo — todas as 9 perguntas do escopo respondidas, com formatação visual e modelo de dados consolidados. Possíveis evoluções futuras: filtros estilizados como botões, rótulos de dados diretos nos gráficos de barra, e página de detalhamento adicional.
 
 ---
 
