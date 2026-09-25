@@ -26,11 +26,11 @@ Todas as 9 perguntas do escopo original já estão respondidas no dashboard.
 
 ```
 ├── dados/
-│   ├── netflix.db                  # Banco SQLite com os dados tratados
-│   └── netflix_titles_tratado.csv  # Dataset limpo, pronto para consumo no Power BI
+│ ├── netflix.db # Banco SQLite com os dados tratados
+│ └── netflix_titles_tratado.csv # Dataset limpo, pronto para consumo no Power BI
 ├── cadernos/
-│   └── exploracao.ipynb            # Exploração, limpeza e tratamento dos dados em Python
-├── NETFLIX.pbix                    # Dashboard interativo no Power BI
+│ └── exploracao.ipynb # Exploração, limpeza e tratamento dos dados em Python
+├── NETFLIX.pbix # Dashboard interativo no Power BI
 ├── .gitattributes
 └── README.md
 ```
